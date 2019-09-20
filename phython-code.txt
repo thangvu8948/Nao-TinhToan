@@ -1,0 +1,104 @@
+def priority(n):
+  if n=='+' or n=='-':
+    return 1
+  if n=='*' or n=='/':
+    return 2
+    
+def push_stack(stack, item):
+  stack.append(item)
+    
+def pop_stack(stack):
+  del stack[len(stack)-1]
+  
+def stack_top(stack):
+  return stack[len(stack)-1]
+  
+  
+def infixToPostfix(infix):
+  stack=[]
+  postfix=''
+  tmp=''
+  for s in infix:
+    if s=='(': 
+      push_stack(stack,s)
+    if ord(s)>=48 and ord(s)<=57:
+      tmp=tmp+s
+    else: 
+      postfix=postfix+tmp+' '
+      tmp=''
+    if s=='+' or s=='-' or s=='*' or s=='/':
+      #postfix=postfix+tmp+' '
+      #tmp=''
+      while(len(stack)>0 and priority(s)<=priority(stack_top(stack))):
+        postfix=postfix+stack_top(stack)+' '
+        pop_stack(stack)
+      push_stack(stack,s)
+    if s==')':
+      while(stack_top(stack)<>'('):
+        postfix=postfix+stack_top(stack)+' '
+        pop_stack(stack)
+      pop_stack(stack)
+  
+  if tmp<>'': postfix=postfix+tmp+' '    
+  while (len(stack)>0):
+    postfix=postfix+stack_top(stack)+' '
+    pop_stack(stack)
+  
+  return postfix
+  
+def result(postfix):
+  stack=[]
+  tmp=''
+  for s in postfix:
+    if ord(s)>=48 and ord(s)<=57:
+      tmp=tmp+s
+    if s==' ' and tmp<>' ' and tmp<>'':
+    #if s<>'+' and s<>'-' and s<>'*' and s<>'/' and tmp<>' ':
+      push_stack(stack,tmp)
+      tmp=''
+    if s=='+':
+      x=float(stack_top(stack))
+      pop_stack(stack)
+      y=float(stack_top(stack))
+      pop_stack(stack)
+      push_stack(stack,x+y)
+    if s=='-':
+      x=float(stack_top(stack))
+      pop_stack(stack)
+      y=float(stack_top(stack))
+      pop_stack(stack)
+      push_stack(stack,y-x)
+    if s=='*':
+      x=float(stack_top(stack))
+      pop_stack(stack)
+      y=float(stack_top(stack))
+      pop_stack(stack)
+      push_stack(stack,x*y)
+    if s=='/':
+      x=float(stack_top(stack))
+      pop_stack(stack)
+      y=float(stack_top(stack))
+      pop_stack(stack)
+      if x==0.0:
+        return 'error'
+      else:
+        push_stack(stack,y/x)
+  return stack_top(stack)
+
+# main
+infix='(120+5)/5-20/10+10*2'
+postfix =infixToPostfix(infix)
+#print postfix
+res=result(postfix)
+if res<>'error':
+  if int(res)==res:
+    res=int(res)
+print res
+
+
+
+
+
+
+
+
